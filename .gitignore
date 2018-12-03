@@ -70,3 +70,5 @@ Temporary Items
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+aoc2018-code.txt

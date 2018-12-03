@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"image"
+	"image/color"
+	"image/png"
 	"log"
 	"os"
 	"strconv"
@@ -44,16 +46,31 @@ func main() {
 		}
 	}
 
+	// create a heatmap for fun :D
+	img := image.NewRGBA(image.Rect(0, 0, 1000, 1000))
+
 	in2s := 0
 	for i := range fabric {
 		for j := range fabric[i] {
 			if fabric[i][j] > 1 {
 				in2s++
 			}
+			c := 255 - uint8(fabric[i][j]*30)
+			img.Set(i, j, color.RGBA{c, c, c, 0xff})
 		}
 	}
 
 	fmt.Printf("square inches: %v\n", in2s)
+
+	f, err := os.Create("image.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = png.Encode(f, img)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func NewClaim(line string) Claim {

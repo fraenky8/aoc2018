@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"sort"
@@ -40,23 +39,14 @@ func main() {
 	for fs.Scan() {
 		records = append(records, NewRecord(fs.Text()))
 	}
-
 	sort.Sort(records)
-
-	if err := ioutil.WriteFile("../input_sorted.txt", []byte(records.String()), 0644); err != nil {
-		log.Fatalf(err.Error())
-	}
 
 	guards := calculateGuardsSleepingTimes(records)
 
-	// Find the guard that has the most minutes asleep. What minute does that guard spend asleep the most?
-	maxSleepingGuard := guards.Max()
-	fmt.Printf("the guard that has the most minutes asleep: %+v\n", maxSleepingGuard)
-	maxMinute, sleepCount := maxSleepingGuard.Max()
-	fmt.Printf("that guard spend asleep the most at minute %v with sleeping count: %v\n", maxMinute, sleepCount)
+	id, minute, sleepCount := guards.Most()
 
-	// What is the ID of the guard you chose multiplied by the minute you chose?
-	fmt.Printf("ID (#%v) of that guard multiplied by the minute: %v\n", maxSleepingGuard.Id, maxSleepingGuard.Id*maxMinute)
+	fmt.Printf("most frequently asleep guard #%v at minute %v with sleeping %v times\n", id, minute, sleepCount)
+	fmt.Printf("guard-ID * minute: %v * %v = %v\n", id, minute, id*minute)
 }
 
 func NewRecord(line string) Record {
@@ -167,4 +157,16 @@ func (g Guard) Max() (minute int, sleepCount int) {
 		}
 	}
 	return minute, sleepCount
+}
+
+func (gs Guards) Most() (id int, minute int, sleepCount int) {
+	for _, guard := range gs {
+		m, sc := guard.Max()
+		if sc > sleepCount {
+			id = guard.Id
+			minute = m
+			sleepCount = sc
+		}
+	}
+	return id, minute, sleepCount
 }

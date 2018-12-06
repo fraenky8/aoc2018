@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"strings"
 )
 
 func main() {
@@ -16,8 +17,23 @@ func main() {
 
 	out := reduce(string(b))
 
-	fmt.Println(out)
-	fmt.Println(len(out))
+	seen := map[rune]bool{}
+	minLen := len(out)
+
+	for _, r := range out {
+		if _, ok := seen[r]; ok {
+			continue
+		}
+		seen[r] = true
+
+		lenIn := len(reduceBy(out, r))
+
+		if lenIn < minLen {
+			minLen = lenIn
+		}
+	}
+
+	fmt.Println(minLen)
 }
 
 func reduce(in string) string {
@@ -40,6 +56,12 @@ func reduce(in string) string {
 		return in
 	}
 
+	return reduce(in)
+}
+
+func reduceBy(in string, r rune) string {
+	in = strings.Replace(in, strings.ToUpper(string(r)), "", -1)
+	in = strings.Replace(in, strings.ToLower(string(r)), "", -1)
 	return reduce(in)
 }
 

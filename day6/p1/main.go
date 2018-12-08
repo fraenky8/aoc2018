@@ -87,6 +87,42 @@ func main() {
 	fmt.Printf("size of the largest area: %v\n", largestArea)
 }
 
+func CreateMatrix(points Points) Matrix {
+
+	minX := points.MinX()
+	maxX := points.MaxX()
+
+	minY := points.MinY()
+	maxY := points.MaxY()
+
+	var matrix Matrix
+
+	for y := minY; y < maxY; y++ {
+		r := Row{}
+		for x := minX; x < maxX; x++ {
+			d := Datas{}
+			for _, point := range points {
+				d = append(d, Data{Point: point, Distance: Distance(point, Point{X: x, Y: y})})
+			}
+			r = append(r, d)
+		}
+		matrix = append(matrix, r)
+	}
+
+	return matrix
+}
+
+func Distance(p1, p2 Point) int {
+	return Abs(p1.X-p2.X) + Abs(p1.Y-p2.Y)
+}
+
+func Abs(i int) int {
+	if i >= 0 {
+		return i
+	}
+	return i * -1
+}
+
 func (ps Points) Infinities() Set {
 	infs := Set{}
 
@@ -116,31 +152,6 @@ func (ps Points) Infinities() Set {
 func IsInfinityPoint(point Point, points Set) bool {
 	ok, _ := points[point]
 	return ok
-}
-
-func CreateMatrix(points Points) Matrix {
-
-	minX := points.MinX()
-	maxX := points.MaxX()
-
-	minY := points.MinY()
-	maxY := points.MaxY()
-
-	var matrix Matrix
-
-	for y := minY; y < maxY; y++ {
-		r := Row{}
-		for x := minX; x < maxX; x++ {
-			d := Datas{}
-			for _, point := range points {
-				d = append(d, Data{Point: point, Distance: Distance(point, Point{X: x, Y: y})})
-			}
-			r = append(r, d)
-		}
-		matrix = append(matrix, r)
-	}
-
-	return matrix
 }
 
 func (ps Points) TopMosts() Points {
@@ -197,17 +208,6 @@ func (ps Points) RightMosts() Points {
 	}
 
 	return points
-}
-
-func Distance(p1, p2 Point) int {
-	return Abs(p1.X-p2.X) + Abs(p1.Y-p2.Y)
-}
-
-func Abs(i int) int {
-	if i > 0 {
-		return i
-	}
-	return i * -1
 }
 
 func NewPoints(r io.Reader) Points {

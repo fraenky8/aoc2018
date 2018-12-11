@@ -29,7 +29,7 @@ type Node struct {
 
 type Nodes map[string]*Node
 
-type Queue []string
+type Stack []string
 
 func main() {
 	file, err := os.Open("../input.txt")
@@ -44,22 +44,22 @@ func main() {
 	//graph := NewGraph(strings.NewReader(example))
 
 	start := GetStartNode(graph)
-	queue := &Queue{start.Letter}
+	stack := &Stack{start.Letter}
 
 	var solution strings.Builder
 
-	for !queue.IsEmpty() {
+	for !stack.IsEmpty() {
 
-		current := queue.Dequeue()
+		current := stack.Pop()
 		solution.WriteString(current)
 
 		graph[current].Visited = true
 
 		enabledNodes := GetAllEnabledNodes(graph)
 		for _, node := range enabledNodes {
-			queue.Add(node)
+			stack.Push(node)
 		}
-		queue.Sort()
+		stack.Sort()
 	}
 
 	fmt.Printf("order of instructions: %v\n", solution.String())
@@ -129,32 +129,32 @@ func NewNode(letter string) *Node {
 	return &Node{Letter: letter, Requires: make(Nodes)}
 }
 
-func (q *Queue) Add(node *Node) {
-	for _, s := range *q {
-		if s == node.Letter {
+func (s *Stack) Push(node *Node) {
+	for _, e := range *s {
+		if e == node.Letter {
 			return
 		}
 	}
-	*q = append(*q, node.Letter)
+	*s = append(*s, node.Letter)
 }
 
-func (q Queue) Len() int {
-	return len(q)
+func (s Stack) Len() int {
+	return len(s)
 }
 
-func (q *Queue) Dequeue() string {
-	if q.Len() == 0 {
+func (s *Stack) Pop() string {
+	if s.Len() == 0 {
 		return ""
 	}
-	s := (*q)[0]
-	*q = (*q)[1:]
-	return s
+	e := (*s)[0]
+	*s = (*s)[1:]
+	return e
 }
 
-func (q *Queue) Sort() {
-	sort.Strings(*q)
+func (s *Stack) Sort() {
+	sort.Strings(*s)
 }
 
-func (q Queue) IsEmpty() bool {
-	return len(q) == 0
+func (s Stack) IsEmpty() bool {
+	return len(s) == 0
 }

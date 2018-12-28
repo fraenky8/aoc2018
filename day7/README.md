@@ -20,11 +20,11 @@ The instructions specify a series of steps and requirements about which steps mu
 Visually, these requirements look like this:
 
 ```
-  -->A--->B--
- /    \      \
-C      -->D----->E
- \           /
-  ---->F-----
+  --> A ---> B --
+ /     \         \
+C       --> D -----> E
+ \              /
+  ----> F -----
 ```
 
 Your first goal is to determine the order in which the steps should be completed. If more than one step is ready, choose the step which is first alphabetically. In this example, the steps would be completed as follows:

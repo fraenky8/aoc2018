@@ -43,26 +43,13 @@ func main() {
 	graph := NewGraph(file)
 	//graph := NewGraph(strings.NewReader(example))
 
-	start := GetStartNode(graph)
-	stack := &Stack{start.Letter}
+	startNodes := GetStartNodes(graph)
 
-	var solution strings.Builder
-
-	for !stack.IsEmpty() {
-
-		current := stack.Pop()
-		solution.WriteString(current)
-
-		graph[current].Visited = true
-
-		enabledNodes := GetAllEnabledNodes(graph)
-		for _, node := range enabledNodes {
-			stack.Push(node)
-		}
-		stack.Sort()
+	fmt.Println("order of instructions:")
+	for i, start := range startNodes {
+		fmt.Printf("\tsolution %d: %v\n", i+1, FindSolution(graph, start))
+		ResetGraph(graph)
 	}
-
-	fmt.Printf("order of instructions: %v\n", solution.String())
 }
 
 func NewGraph(r io.Reader) Nodes {
@@ -94,13 +81,43 @@ func NewGraph(r io.Reader) Nodes {
 	return nodes
 }
 
-func GetStartNode(nodes Nodes) *Node {
+// FindSolution is basically a DFS
+func FindSolution(graph Nodes, start *Node) string {
+	stack := &Stack{start.Letter}
+
+	var solution strings.Builder
+
+	for !stack.IsEmpty() {
+
+		current := stack.Pop()
+		solution.WriteString(current)
+
+		graph[current].Visited = true
+
+		enabledNodes := GetAllEnabledNodes(graph)
+		for _, node := range enabledNodes {
+			stack.Push(node)
+		}
+		stack.Sort()
+	}
+
+	return solution.String()
+}
+
+func ResetGraph(nodes Nodes) {
+	for _, node := range nodes {
+		node.Visited = false
+	}
+}
+
+func GetStartNodes(nodes Nodes) []*Node {
+	var sn []*Node
 	for _, node := range nodes {
 		if len(node.Requires) == 0 {
-			return node
+			sn = append(sn, node)
 		}
 	}
-	return nil
+	return sn
 }
 
 func GetAllEnabledNodes(graph Nodes) Nodes {
